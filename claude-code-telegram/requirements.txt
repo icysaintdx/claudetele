@@ -1,0 +1,23 @@
+# Telegram Bot 依赖清单
+# 安装命令: pip install -r requirements.txt
+
+# 核心依赖
+structlog>=25.4.0
+pydantic>=2.11.5
+pydantic-settings>=2.9.1
+python-dotenv>=1.0.0
+aiofiles>=24.1.0
+aiosqlite>=0.21.0
+anthropic>=0.40.0
+claude-agent-sdk>=0.1.39
+python-telegram-bot[rate-limiter]>=22.6
+
+# Web 服务器（可选，用于 webhook）
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+
+# 定时任务（可选）
+apscheduler>=3.10
+
+# YAML 配置
+PyYAML>=6.0.2
