@@ -1,0 +1,1 @@
+bun --env-file=.env.gpt54 ./src/entrypoints/cli.tsx --dangerously-skip-permissions

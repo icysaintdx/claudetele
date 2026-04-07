@@ -1,0 +1,1 @@
+bun --env-file=.env.sonnet45 ./src/entrypoints/cli.tsx --dangerously-skip-permissions

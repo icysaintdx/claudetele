@@ -1,0 +1,1 @@
+bun --env-file=.env.ollama ./src/entrypoints/cli.tsx --dangerously-skip-permissions

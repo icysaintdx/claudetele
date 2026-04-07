@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Task(*)",
+      "TaskCreate(*)",
+      "TaskGet(*)",
+      "TaskOutput(*)",
+      "TaskList(*)",
+      "TaskStop(*)",
+      "TaskUpdate(*)",
+      "Agent(*)",
+      "Skill(*)",
+      "MultiEdit(*)",
+      "LS(*)",
+      "NotebookRead(*)",
+      "NotebookEdit(*)",
+      "TodoRead(*)",
+      "TodoWrite(*)",
+      "MCP(*)",
+      "PowerShell(*)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "CLAUDE_DEFAULT_WORKSPACE": "D:\\cc\\my-project",
+    "CLAUDE_PROJECT_RULE": "Treat each first-level subdirectory under D:\\cc\\my-project as a separate project."
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '{\"systemMessage\":\"Workspace rule: use D:\\\\cc\\\\my-project as the workspace root; treat each first-level subdirectory as a separate project.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}

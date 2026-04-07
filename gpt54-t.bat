@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy Bypass -File D:\cc\start.ps1 -Telegram -Profile gpt54

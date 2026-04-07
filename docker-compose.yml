@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Claude Code Telegram Bot 服务
+  claude-telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: claude-telegram-bot
+    
+    # 环境变量
+    environment:
+      # === 必需配置 ===
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      
+      # === Claude API 配置 ===
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-3-opus-20240229}
+      
+      # === 本地 Bun 实现配置 ===
+      - USE_LOCAL_BUN=true
+      - LOCAL_BUN_PROJECT_PATH=/app/claudecode
+      - CLAUDE_LOCAL_PROJECT_PATH=/app/claudecode
+      
+      # === 路径配置 ===
+      - APPROVED_DIRECTORY=/projects
+      - DATABASE_URL=sqlite:////data/bot.db
+      
+      # === 功能开关 ===
+      - AGENTIC_MODE=${AGENTIC_MODE:-true}
+      - VERBOSE_LEVEL=${VERBOSE_LEVEL:-1}
+      - ENABLE_GIT_INTEGRATION=${ENABLE_GIT_INTEGRATION:-true}
+      - ENABLE_FILE_UPLOADS=${ENABLE_FILE_UPLOADS:-true}
+      - ENABLE_QUICK_ACTIONS=${ENABLE_QUICK_ACTIONS:-true}
+      - ENABLE_IMAGE_UPLOADS=${ENABLE_IMAGE_UPLOADS:-true}
+      - ENABLE_CONVERSATION_MODE=${ENABLE_CONVERSATION_MODE:-true}
+      
+      # === 安全配置 ===
+      - ALLOWED_USERS=${ALLOWED_USERS}
+      - DISABLE_SECURITY_PATTERNS=${DISABLE_SECURITY_PATTERNS:-false}
+      - DISABLE_TOOL_VALIDATION=${DISABLE_TOOL_VALIDATION:-false}
+      
+      # === 限制配置 ===
+      - CLAUDE_TIMEOUT_SECONDS=${CLAUDE_TIMEOUT_SECONDS:-300}
+      - CLAUDE_MAX_TURNS=${CLAUDE_MAX_TURNS:-50}
+      - CLAUDE_MAX_COST_PER_USER=${CLAUDE_MAX_COST_PER_USER:-10.0}
+      - RATE_LIMIT_REQUESTS=${RATE_LIMIT_REQUESTS:-100}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-60}
+      
+      # === 日志配置 ===
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DEBUG=${DEBUG:-false}
+      
+      # === 可选功能 ===
+      - ENABLE_VOICE_MESSAGES=${ENABLE_VOICE_MESSAGES:-false}
+      - ENABLE_MCP=${ENABLE_MCP:-false}
+      - ENABLE_API_SERVER=${ENABLE_API_SERVER:-false}
+      - API_SERVER_PORT=${API_SERVER_PORT:-8080}
+    
+    # 数据持久化
+    volumes:
+      # 数据库持久化
+      - ./data:/data
+      # 项目目录（Claude 工作目录）
+      - ./projects:/projects
+      # 可选：配置文件挂载
+      - ./config:/app/config:ro
+      # 可选：日志目录
+      - ./logs:/app/logs
+    
+    # 如果需要 API 服务器，暴露端口
+    ports:
+      - "${API_SERVER_PORT:-8080}:8080"
+    
+    # 重启策略
+    restart: unless-stopped
+    
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # 资源限制（可选）
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+        labels: "service_name"
+        env: "OS_VERSION"
+
+# 可选：使用外部网络（如果需要与其他服务通信）
+# networks:
+#   default:
+#     external:
+#       name: my-network
